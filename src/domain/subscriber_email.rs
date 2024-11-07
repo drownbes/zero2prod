@@ -9,7 +9,6 @@ impl SubscriberEmail {
             Err(format!("{} is not a valid subscriber email.", s))
         }
     }
-
 }
 impl AsRef<str> for SubscriberEmail {
     fn as_ref(&self) -> &str {
@@ -22,11 +21,10 @@ mod tests {
     use super::SubscriberEmail;
     use claim::assert_err;
 
-    use fake::{faker::internet::en::SafeEmail, Fake};
-    use quickcheck_macros::quickcheck;
-    use quickcheck::{Gen, Arbitrary};
     use fake::rand::{rngs::StdRng, SeedableRng};
-
+    use fake::{faker::internet::en::SafeEmail, Fake};
+    use quickcheck::{Arbitrary, Gen};
+    use quickcheck_macros::quickcheck;
 
     #[derive(Debug, Clone)]
     struct ValidEmailFixture(pub String);
@@ -38,7 +36,6 @@ mod tests {
             Self(email)
         }
     }
-
 
     #[quickcheck]
     fn valid_emails_are_parsed_successfully(valid_email: ValidEmailFixture) -> bool {
