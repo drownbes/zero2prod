@@ -47,6 +47,7 @@
           cargo-audit
           cargo-expand
           sqlx-cli
+          bunyan-rs
           packages.postgres-service.config.outputs.package
         ];
       };
