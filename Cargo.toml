@@ -38,6 +38,10 @@ validator = "0.19.0"
 reqwest = { version ="0.12.9", features = ["json", "native-tls"] }
 rand = "0.8.5"
 thiserror = "2.0.0"
+anyhow = "1.0.93"
+base64 = "0.22.1"
+sha3 = "0.10.8"
+argon2 = "0.5.3"
 
 [dev-dependencies]
 fake = "3.0.0"
