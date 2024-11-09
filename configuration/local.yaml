@@ -1,3 +1,4 @@
 application:
   host: 127.0.0.1
   base_url: "http://127.0.0.1"
+  hmac_secret: hehe-dfadfjk-23124hdfadf-2414hdfhadfdsfdfdfdfsdfdfadfdafhdahfadhfa;dfhadfhsddfasdkfjdsfja

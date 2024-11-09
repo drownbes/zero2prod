@@ -26,6 +26,9 @@
               services.postgres."pg_master" = {
                 enable = true;
               };
+              services.redis."rd_master" = {
+                enable = true;
+              };
             }
           ];
         };
