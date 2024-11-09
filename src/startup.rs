@@ -1,11 +1,9 @@
 use std::net::TcpListener;
 
 use crate::{
-    configurations::{DatabaseSettings, Settings},
-    email_client::EmailClient,
-    routes::{self, admin_dashboard, confirm, home, login, login_form},
+    authentication::reject_anonymous_users, configurations::{DatabaseSettings, Settings}, email_client::EmailClient, routes::{self, admin_dashboard, change_password, change_password_form, confirm, home, log_out, login, login_form}
 };
-use actix_web::{cookie::Key, dev::Server, web, App, HttpServer};
+use actix_web::{cookie::Key, dev::Server, middleware::from_fn, web, App, HttpServer};
 use secrecy::{ExposeSecret, SecretString};
 use sqlx::PgPool;
 use tracing_actix_web::TracingLogger;
@@ -107,7 +105,14 @@ pub async fn run(
             .route("/", web::get().to(home))
             .route("/login", web::get().to(login_form))
             .route("/login", web::post().to(login))
-            .route("/admin/dashboard", web::get().to(admin_dashboard))
+            .service(
+                web::scope("/admin")
+                    .wrap(from_fn(reject_anonymous_users))
+                    .route("/dashboard", web::get().to(admin_dashboard))
+                    .route("/password", web::get().to(change_password_form))
+                    .route("/password", web::post().to(change_password))
+                    .route("/logout", web::post().to(log_out)),
+            )
             .app_data(db_pool.clone())
             .app_data(email_client.clone())
             .app_data(base_url.clone())

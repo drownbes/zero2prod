@@ -1,8 +1,11 @@
 use crate::telemetry::spawn_blocking_with_tracing;
 use anyhow::Context;
-use argon2::{Argon2, PasswordHash, PasswordVerifier};
+use argon2::{password_hash::SaltString, Algorithm, Argon2, Params, PasswordHash, PasswordVerifier};
 use secrecy::{ExposeSecret, SecretString};
 use sqlx::PgPool;
+use argon2::{
+    PasswordHasher, Version
+};
 
 #[derive(thiserror::Error, Debug)]
 pub enum AuthError {
@@ -94,3 +97,47 @@ WHERE username = $1
     .map(|row| (row.user_id, SecretString::new(row.password_hash.into())));
     Ok(row)
 }
+
+
+#[tracing::instrument(name = "Change password", skip(password, pool))]
+pub async fn change_password(
+    user_id: uuid::Uuid,
+    password: SecretString,
+    pool: &PgPool,
+) -> Result<(), anyhow::Error> {
+    let password_hash = spawn_blocking_with_tracing(
+        move || compute_password_hash(password)
+    )
+        .await?
+        .context("Failed to hash password")?;
+    sqlx::query!(
+        r#"
+UPDATE users
+SET password_hash = $1
+WHERE user_id = $2
+"#,
+        password_hash.expose_secret(),
+        user_id
+    )
+        .execute(pool)
+        .await
+        .context("Failed to change user's password in the database.")?;
+    Ok(())
+}
+
+
+fn compute_password_hash(
+    password: SecretString
+) -> Result<SecretString, anyhow::Error> {
+    let salt = SaltString::generate(&mut rand::thread_rng());
+    let password_hash = Argon2::new(
+        Algorithm::Argon2id,
+        Version::V0x13,
+        Params::new(15000, 2, 1, None).unwrap(),
+    )
+        .hash_password(password.expose_secret().as_bytes(), &salt)
+        .map_err(|e| anyhow::anyhow!(e))?
+        .to_string();
+    Ok(SecretString::new(password_hash.into()))
+}
+
