@@ -1,14 +1,18 @@
 use actix_web::{
-    body::MessageBody, dev::{ServiceRequest, ServiceResponse}, error::InternalError, middleware::Next, FromRequest
+    body::MessageBody,
+    dev::{ServiceRequest, ServiceResponse},
+    error::InternalError,
+    middleware::Next,
+    FromRequest,
 };
 
-use crate::{session_state::TypedSession, utils::{e500, see_other}};
-use uuid::Uuid;
-use std::ops::Deref;
+use crate::{
+    session_state::TypedSession,
+    utils::{e500, see_other},
+};
 use actix_web::HttpMessage;
-
-
-
+use std::ops::Deref;
+use uuid::Uuid;
 
 #[derive(Copy, Clone, Debug)]
 pub struct UserId(Uuid);
@@ -23,7 +27,6 @@ impl Deref for UserId {
         &self.0
     }
 }
-
 
 pub async fn reject_anonymous_users(
     mut req: ServiceRequest,

@@ -41,7 +41,7 @@ pub async fn admin_dashboard(
 </ol>
 </body>
 </html>"#,
-        ))) 
+        )))
 }
 
 #[tracing::instrument(name = "Get username", skip(pool))]

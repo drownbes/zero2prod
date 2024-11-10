@@ -1,7 +1,13 @@
 use std::net::TcpListener;
 
 use crate::{
-    authentication::reject_anonymous_users, configurations::{DatabaseSettings, Settings}, email_client::EmailClient, routes::{self, admin_dashboard, change_password, change_password_form, confirm, home, log_out, login, login_form}
+    authentication::reject_anonymous_users,
+    configurations::{DatabaseSettings, Settings},
+    email_client::EmailClient,
+    routes::{
+        self, admin_dashboard, change_password, change_password_form, confirm, home, log_out,
+        login, login_form, publish_newsletter, publish_newsletter_form,
+    },
 };
 use actix_web::{cookie::Key, dev::Server, middleware::from_fn, web, App, HttpServer};
 use secrecy::{ExposeSecret, SecretString};
@@ -23,18 +29,8 @@ impl Application {
     // `Application`.
     pub async fn build(configuration: Settings) -> Result<Self, anyhow::Error> {
         let connection_pool = get_connection_pool(&configuration.database);
-        let sender_email = configuration
-            .email_client
-            .sender()
-            .expect("Invalid sender email address.");
 
-        let timeout = configuration.email_client.timeout();
-        let email_client = EmailClient::new(
-            configuration.email_client.base_url,
-            sender_email,
-            configuration.email_client.authorization_token,
-            timeout,
-        );
+        let email_client = configuration.email_client.client();
         let address = format!(
             "{}:{}",
             configuration.application.host, configuration.application.port
@@ -101,13 +97,14 @@ pub async fn run(
             .route("/health_check", web::get().to(routes::health_check))
             .route("/subscriptions/confirm", web::get().to(confirm))
             .route("/subscriptions", web::post().to(routes::subscribe))
-            .route("/newsletters", web::post().to(routes::publish_newsletter))
             .route("/", web::get().to(home))
             .route("/login", web::get().to(login_form))
             .route("/login", web::post().to(login))
             .service(
                 web::scope("/admin")
                     .wrap(from_fn(reject_anonymous_users))
+                    .route("/newsletters", web::get().to(publish_newsletter_form))
+                    .route("/newsletters", web::post().to(publish_newsletter))
                     .route("/dashboard", web::get().to(admin_dashboard))
                     .route("/password", web::get().to(change_password_form))
                     .route("/password", web::post().to(change_password))

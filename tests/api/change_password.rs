@@ -1,4 +1,4 @@
-use crate::helpers::{spawn_app, assert_is_redirect_to};
+use crate::helpers::{assert_is_redirect_to, spawn_app};
 use uuid::Uuid;
 
 #[tokio::test]
@@ -22,11 +22,10 @@ async fn you_must_be_logged_in_to_change_your_password() {
             "new_password": &new_password,
             "new_password_check": &new_password,
         }))
-    .await;
+        .await;
     // Assert
     assert_is_redirect_to(&response, "/login");
 }
-
 
 #[tokio::test]
 async fn new_password_fields_must_match() {
@@ -47,7 +46,7 @@ async fn new_password_fields_must_match() {
             "new_password": &new_password,
             "new_password_check": &another_new_password,
         }))
-    .await;
+        .await;
     assert_is_redirect_to(&response, "/admin/password");
     // Act - Part 3 - Follow the redirect
     let html_page = app.get_change_password_html().await;
@@ -76,14 +75,12 @@ async fn current_password_must_be_valid() {
             "new_password": &new_password,
             "new_password_check": &new_password,
         }))
-    .await;
+        .await;
     // Assert
     assert_is_redirect_to(&response, "/admin/password");
     // Act - Part 3 - Follow the redirect
     let html_page = app.get_change_password_html().await;
-    assert!(html_page.contains(
-        "<p><i>The current password is incorrect.</i></p>"
-    ));
+    assert!(html_page.contains("<p><i>The current password is incorrect.</i></p>"));
 }
 
 #[tokio::test]
@@ -105,7 +102,7 @@ async fn changing_password_works() {
             "new_password": &new_password,
             "new_password_check": &new_password,
         }))
-    .await;
+        .await;
     assert_is_redirect_to(&response, "/admin/password");
     // Act - Part 3 - Follow the redirect
     let html_page = app.get_change_password_html().await;

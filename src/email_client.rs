@@ -40,6 +40,7 @@ impl EmailClient {
             html_body: html_content,
             text_body: text_content,
         };
+        dbg!("sending email {}", &request_body);
         self.http_client
             .post(&url)
             .header(
@@ -54,7 +55,7 @@ impl EmailClient {
     }
 }
 
-#[derive(serde::Serialize)]
+#[derive(serde::Serialize, Debug)]
 #[serde(rename_all = "PascalCase")]
 struct SendEmailRequest<'a> {
     from: &'a str,
