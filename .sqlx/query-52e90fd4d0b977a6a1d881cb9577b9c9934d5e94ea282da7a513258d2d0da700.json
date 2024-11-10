@@ -1,0 +1,58 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\nSELECT\nresponse_status_code as \"response_status_code!\",\nresponse_headers as \"response_headers!: Vec<HeaderPairRecord>\",\nresponse_body as \"response_body!\"\nFROM idempotency\nWHERE\nuser_id = $1 AND\nidempotency_key = $2\n",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "response_status_code!",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 1,
+        "name": "response_headers!: Vec<HeaderPairRecord>",
+        "type_info": {
+          "Custom": {
+            "name": "header_pair[]",
+            "kind": {
+              "Array": {
+                "Custom": {
+                  "name": "header_pair",
+                  "kind": {
+                    "Composite": [
+                      [
+                        "name",
+                        "Text"
+                      ],
+                      [
+                        "value",
+                        "Bytea"
+                      ]
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "response_body!",
+        "type_info": "Bytea"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text"
+      ]
+    },
+    "nullable": [
+      true,
+      true,
+      true
+    ]
+  },
+  "hash": "52e90fd4d0b977a6a1d881cb9577b9c9934d5e94ea282da7a513258d2d0da700"
+}

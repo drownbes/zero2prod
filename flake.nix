@@ -15,8 +15,33 @@
       pkgs = nixpkgs.legacyPackages.${system};
       toolchain = fenix.packages.${system}.stable.completeToolchain;
       pcs = (import process-compose-flake.lib { inherit pkgs; });
+      platform = (pkgs.makeRustPlatform {
+        cargo = toolchain;
+        rustc = toolchain;
+      });
     in rec {
       packages = {
+
+        project = platform.buildRustPackage {
+          pname = "zero2prod";
+          version = "0.1.0";
+          src = ./.;
+          cargoLock.lockFile = ./Cargo.lock;
+
+          cargoTestFlags = "--lib --bins";
+
+          nativeBuildInputs = [
+            pkgs.pkg-config
+          ];
+
+          buildInputs = [
+            pkgs.openssl
+            pkgs.openssl.dev
+          ];
+          PKG_CONFIG_PATH = "${pkgs.openssl.dev}/lib/pkgconfig";
+          SQLX_OFFLINE = true;
+        };
+
         inherit pcs;
         postgres-service = pcs.evalModules {
           modules = [
