@@ -1,19 +1,12 @@
-[package]
-name = "zero2prod"
-version = "0.1.0"
-edition = "2021"
-
-[lib]
-
 [[bin]]
 name = "zero2prod"
 
 [dependencies]
 actix-web = "4.9.0"
-tokio = { version = "1.41.0", features = ["full"] }
-serde = { version = "1.0", features = ["derive"] }
-sqlx = { version = "0.8", features = [ 
-  "runtime-tokio", 
+tokio = {version = "1.41.0", features = ["full"]}
+serde = {version = "1.0", features = ["derive"]}
+sqlx = {version = "0.8", features = [
+  "runtime-tokio",
   "tls-native-tls",
   "postgres",
   "macros",
@@ -22,28 +15,28 @@ sqlx = { version = "0.8", features = [
   "chrono"
 ]}
 config = "0.14.1"
-uuid = { version = "1.11.0", features = ["v4", "serde"] }
+uuid = {version = "1.11.0", features = ["v4", "serde"]}
 chrono = "0.4.38"
 log = "0.4.22"
-tracing = { version = "0.1.40", features = ["log"] }
-tracing-subscriber = { version = "0.3.18", features = ["registry", "env-filter"] }
+tracing = {version = "0.1.40", features = ["log"]}
+tracing-subscriber = {version = "0.3.18", features = ["registry", "env-filter"]}
 tracing-bunyan-formatter = "0.3.9"
 tracing-log = "0.2.0"
 once_cell = "1.20.2"
-secrecy = { version = "0.10.3", features = ["serde"] }
+secrecy = {version = "0.10.3", features = ["serde"]}
 tracing-actix-web = "0.7.14"
 unicode-segmentation = "1.12.0"
 claim = "0.5.0"
 validator = "0.19.0"
-reqwest = { version ="0.12.9", features = ["json", "native-tls", "cookies"] }
+reqwest = {version = "0.12.9", features = ["json", "native-tls", "cookies"]}
 rand = "0.8.5"
 thiserror = "2.0.0"
 anyhow = "1.0.93"
 base64 = "0.22.1"
 sha3 = "0.10.8"
 argon2 = "0.5.3"
-actix-web-flash-messages = { version = "0.5.0", features = ["cookies"] }
-actix-session = { version = "0.10.1", features = ["redis-session-native-tls"] }
+actix-web-flash-messages = {version = "0.5.0", features = ["cookies"]}
+actix-session = {version = "0.10.1", features = ["redis-session-native-tls"]}
 serde_json = "1.0.132"
 serde_urlencoded = "0.7.1"
 
@@ -55,3 +48,9 @@ quickcheck_macros = "1.0.0"
 serde_json = "1.0.132"
 wiremock = "0.6.2"
 
+[lib]
+
+[package]
+name = "zero2prod"
+version = "0.1.0"
+edition = "2021"
