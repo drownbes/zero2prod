@@ -56,7 +56,6 @@ pub async fn publish_newsletter(
         .await
         .context("Failed to store newsletter issue details")
         .map_err(e500)?;
-    dbg!(issue_id);
     enqueue_delivery_tasks(&mut transaction, issue_id)
         .await
         .context("Failed to enqueue delivery tasks")
@@ -115,6 +114,5 @@ async fn enqueue_delivery_tasks(
         newsletter_issue_id,
     );
     transaction.execute(query).await?;
-    dbg!("enqueue_delivery_tasks");
     Ok(())
 }

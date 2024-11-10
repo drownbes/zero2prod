@@ -42,7 +42,6 @@ async fn create_unconfirmed_subscriber(app: &TestApp) -> ConfirmationLinks {
 
 async fn create_confirmed_subscriber(app: &TestApp) {
     let confirmation_link = create_unconfirmed_subscriber(app).await.html;
-    dbg!(&confirmation_link);
     reqwest::get(confirmation_link)
         .await
         .unwrap()
@@ -98,7 +97,6 @@ async fn newsletters_are_delivered_to_confirmed_subscribers() {
         .mount(&app.email_server)
         .await;
 
-    dbg!(&app.email_server);
 
     // Act - Part 1 - Submit newsletter form
     let newsletter_request_body = serde_json::json!({
@@ -118,7 +116,6 @@ async fn newsletters_are_delivered_to_confirmed_subscribers() {
     ));
     app.dispatch_all_pending_emails().await;
 
-    dbg!("test runs to end");
     // Mock verifies on Drop that we have sent the newsletter email
 }
 

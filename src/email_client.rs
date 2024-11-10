@@ -40,7 +40,6 @@ impl EmailClient {
             html_body: html_content,
             text_body: text_content,
         };
-        dbg!("sending email {}", &request_body);
         self.http_client
             .post(&url)
             .header(

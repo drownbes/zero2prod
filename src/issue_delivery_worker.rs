@@ -46,9 +46,7 @@ pub async fn try_execute_task(
     pool: &PgPool,
     email_client: &EmailClient,
 ) -> Result<ExecutionOutcome, anyhow::Error> {
-    dbg!("try execute task");
     let task = dequeue_task(pool).await?;
-    dbg!(&task);
     if task.is_none() {
         return Ok(ExecutionOutcome::EmptyQueue);
     }
