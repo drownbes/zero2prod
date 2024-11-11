@@ -187,7 +187,7 @@ VALUES ($1, $2)"#,
     )
     .execute(&mut **transaction)
     .await
-    .map_err(|e| StoreTokenError(e))?;
+    .map_err(StoreTokenError)?;
     Ok(())
 }
 

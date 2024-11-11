@@ -3,7 +3,7 @@ application:
 database:
   host: "127.0.0.1"
   port: 5432
-  username: "drownbes"
+  username: "postgres"
   password: ""
   database_name: "newsletter"
 email_client:

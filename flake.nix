@@ -9,6 +9,11 @@
     process-compose-flake.url = "github:Platonic-Systems/process-compose-flake";
     services-flake.url = "github:juspay/services-flake";
     treefmt-nix.url = "github:numtide/treefmt-nix";
+    crane.url = "github:ipetkov/crane";
+    advisory-db = {
+      url = "github:rustsec/advisory-db";
+      flake = false;
+    };
   };
 
   outputs = {
@@ -19,6 +24,8 @@
     process-compose-flake,
     services-flake,
     treefmt-nix,
+    crane,
+    advisory-db,
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = nixpkgs.legacyPackages.${system};
@@ -31,6 +38,7 @@
             cli.options.port = 8084;
             services.postgres."pg_master" = {
               enable = true;
+              superuser = "postgres";
             };
             services.redis."rd_master" = {
               enable = true;
@@ -46,23 +54,97 @@
         cargo = toolchain;
         rustc = toolchain;
       };
+
+      craneLib' = crane.mkLib pkgs;
+      unfilteredRoot = ./.;
+
+      src = with pkgs;
+        lib.fileset.toSource {
+          root = unfilteredRoot;
+          fileset = lib.fileset.unions [
+            # Default files from crane (Rust and cargo files)
+            (craneLib.fileset.commonCargoSources unfilteredRoot)
+            # Also keep any markdown files
+            (lib.fileset.fileFilter (file: file.hasExt "html") unfilteredRoot)
+            # Example of a folder for images, icons, etc
+            # (lib.fileset.maybeMissing ./src/routes/home/home.html)
+            # (lib.fileset.maybeMissing ./src/routes/login/login.html)
+            (lib.fileset.maybeMissing ./migrations)
+            (lib.fileset.maybeMissing ./configuration)
+            (lib.fileset.maybeMissing ./.sqlx)
+          ];
+        };
+
+      craneLib = craneLib'.overrideToolchain toolchain;
+
+      commonArgs = {
+        inherit src;
+        strictDeps = true;
+        doCheck = false;
+        nativeBuildInputs = [
+          pkgs.pkg-config
+        ];
+
+        buildInputs = [
+          pkgs.openssl
+          pkgs.openssl.dev
+        ];
+      };
+
+      cargoArtifacts = craneLib.buildDepsOnly (commonArgs
+        // {
+          SQLX_OFFLINE = true;
+        });
+
+      zero2prod-crate = craneLib.buildPackage (commonArgs
+        // {
+          inherit cargoArtifacts;
+          SQLX_OFFLINE = true;
+        });
+
+      clippy = craneLib.cargoClippy (commonArgs
+        // {
+          inherit cargoArtifacts;
+          SQLX_OFFLINE = true;
+          cargoClippyExtraArgs = "--all-targets -- --deny warnings";
+        });
+
+      audit = craneLib.cargoAudit {
+        inherit src advisory-db;
+      };
+
+      deny = craneLib.cargoDeny {
+        inherit src;
+      };
+      nextest = craneLib.cargoTest (commonArgs
+        // {
+          inherit cargoArtifacts;
+        });
+
+      integration = craneLib.mkCargoDerivation (commonArgs
+        // {
+          inherit cargoArtifacts;
+          pnameSuffix = "-test";
+          doCheck = false;
+          buildPhaseCargoCommand = ''
+            ${processCompose}/bin/process-compose --detached
+
+            cargo test --locked
+
+            ${processCompose}/bin/process-compose down
+          '';
+        });
     in {
       formatter = treefmtEval.config.build.wrapper;
-      checks.hehe = pkgs.runCommand "integration test" {} ''
-        mkdir $out
-        echo "Running process compose services"
-        ${processCompose}/bin/process-compose --detached
-        pwd
-        ls -la .
-        ls -la ..
+      checks = {
+        inherit clippy integration;
+        formatting = treefmtEval.config.build.check self;
+      };
 
-        echo "Shutdown process compose services"
-        ${processCompose}/bin/process-compose down
-        echo hehe
-        cd "$FLAKE_ROOT"
-        ls -la
-      '';
       packages = rec {
+        inherit integration;
+        artifacts = cargoArtifacts;
+        project-crane = zero2prod-crate;
         project-docker-image = pkgs.dockerTools.buildImage {
           name = "zero2prod";
           config = {
@@ -91,25 +173,27 @@
         };
       };
 
-      devShells.default = pkgs.mkShell {
+      devShells.default = craneLib.devShell {
+        checks = {
+          clippy = clippy;
+        };
         shellHook = ''
           export DATABASE_URL=postgres://drownbes:@localhost:5432/newsletter
         '';
         inputsFrom = [
           postgres-service.config.services.outputs.devShell
+          zero2prod-crate
         ];
         buildInputs = with pkgs; [
-          openssl
-          pkg-config
-          toolchain
           cargo-watch
           cargo-tarpaulin
           cargo-audit
           cargo-expand
+          cargo-nextest
+          cargo-deny
           sqlx-cli
           bunyan-rs
           postgres-service.config.outputs.package
-          crate2nix
         ];
       };
     });
