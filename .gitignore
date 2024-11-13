@@ -2,3 +2,5 @@
 data
 result
 result-*
+**/charts/*.tgz
+**/charts/.helm_ls_cache

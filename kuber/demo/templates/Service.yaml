@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: zero2prod-service
+spec:
+  selector:
+    app: zero2prod
+  ports:
+  - port: {{ .Values.hostPort }}
+    targetPort: {{ .Values.port }}

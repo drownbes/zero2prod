@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zero2prod
+  labels:
+    app: zero2prod
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: zero2prod
+  template:
+    metadata:
+      labels:
+        app: zero2prod
+    spec:
+      serviceAccountName: waiter
+      containers:
+      - name: zero2prod
+        image: zero2prod:latest
+        imagePullPolicy: Never
+        env: 
+        - name: APP_ENVIRONMENT
+          value: production
+        ports:
+        - containerPort: {{ .Values.port }} #TODO: move to variable
+        volumeMounts:
+        - name: config
+          mountPath: "/configuration"
+          readOnly: true
+      initContainers:
+      - name: migrations-wait
+        image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+        args:
+          - "job"
+          - "-ljob=sqlx-migrate"
+      volumes:
+      - name: config
+        configMap:
+          name: zero2prod-config
+          items:
+          - key: base
+            path: "base.yaml"
+          - key: production
+            path: "production.yaml"

@@ -1,0 +1,17 @@
+postgresql:
+  fullnameOverride: postgres
+  auth:
+    username: postgres
+    password: postgrespassword
+    database: newsletter
+
+redis:
+  fullnameOverride: redis
+  architecture: standalone
+  auth:
+    password: redispassword
+
+
+port: 8000
+# host port exposed by cloud provider kind
+hostPort: 5678

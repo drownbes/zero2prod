@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sqlx-migrate
+  labels:
+    job: sqlx-migrate
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      # initContainers:
+      # - name: migrations-wait
+      #   image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+      #   args:
+      #     - "service"
+      #     - "{{ .Values.postgresql.fullnameOverride }}"
+      containers:
+      - name: sqlx-migrate
+        image: sqlx-migration:latest
+        imagePullPolicy: Never
+        env: 
+        - name: DATABASE_URL
+          value: "postgres://{{ .Values.postgresql.auth.username }}:{{ .Values.postgresql.auth.password }}@{{.Values.postgresql.fullnameOverride}}:{{ .Values.postgresql.containerPorts.postgresql }}/{{ .Values.postgresql.auth.database }}"
+     

@@ -47,6 +47,20 @@
         ];
       };
 
+      cloud-provider-kind = pkgs.buildGoModule {
+        src = pkgs.fetchFromGitHub {
+          owner = "kubernetes-sigs";
+          repo = "cloud-provider-kind";
+          rev = "v0.4.0";
+          sha256 = "sha256-u3K8ymDp56FeIn7FIxHl/fJPUYX+8r5hR8hIPcJVtuE=";
+        };
+
+        pname = "cloud-provider-kind";
+        name = "cloud-provider-kind";
+
+        vendorHash = null;
+      };
+
       treefmtEval = treefmt-nix.lib.evalModule pkgs ./treefmt.nix;
 
       processCompose = postgres-service.config.outputs.package;
@@ -142,13 +156,35 @@
       };
 
       packages = rec {
-        inherit integration;
+        inherit integration cloud-provider-kind;
         artifacts = cargoArtifacts;
         project-crane = zero2prod-crate;
-        project-docker-image = pkgs.dockerTools.buildImage {
+        project-docker-image = pkgs.dockerTools.buildLayeredImage {
           name = "zero2prod";
+          tag = "latest";
           config = {
-            Cmd = ["${project}/bin/zero2prod"];
+            Cmd = ["${project-crane}/bin/zero2prod"];
+          };
+        };
+
+        sqlx-migration-image = pkgs.dockerTools.buildImage {
+          name = "sqlx-migration";
+          tag = "latest";
+          copyToRoot = pkgs.buildEnv {
+            name = "image-root";
+            paths = [
+              (builtins.filterSource (path: type: (baseNameOf path) == "migrations") ./.)
+              pkgs.sqlx-cli
+              pkgs.coreutils
+              pkgs.bash
+            ];
+          };
+          config = {
+            Cmd = [
+              "${pkgs.sqlx-cli}/bin/sqlx"
+              "migrate"
+              "run"
+            ];
           };
         };
 
@@ -194,6 +230,12 @@
           sqlx-cli
           bunyan-rs
           postgres-service.config.outputs.package
+
+          #kubernetes
+          kind
+          kubectl
+          kubernetes-helm
+          cloud-provider-kind
         ];
       };
     });

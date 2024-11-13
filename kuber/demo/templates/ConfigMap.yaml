@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zero2prod-config
+data:
+  base: |
+    application:
+      host: 0.0.0.0
+      base_url: "http://127.0.0.1:{{ .Values.hostPort }}"
+      port: {{ required "zero2prod app port is required!" .Values.port}}
+      hmac_secret: hehe-dfadfjk-23124hdfadf-2414hdfhadfdsfdfdfdfsdfdfadfdafhdahfadhfa;dfhadfhsddfasdkfjdsfja
+    database:
+      host: {{quote .Values.postgresql.fullnameOverride}}
+      port: {{.Values.postgresql.containerPorts.postgresql}}
+      username: {{quote .Values.postgresql.auth.username }}
+      password: {{quote .Values.postgresql.auth.password }}
+      database_name: {{quote .Values.postgresql.auth.database }}
+    email_client:
+      base_url: "localhost"
+      sender_email: "test@gmail.com"
+      authorization_token: "my-secret-token"
+      timeout_milliseconds: 10000
+    redis_uri: "redis://:{{ .Values.redis.auth.password }}@{{ .Values.redis.fullnameOverride}}-master:{{ .Values.redis.master.containerPorts.redis }}"
+  # just to create file
+  production: | 
+    application:
+      host: 0.0.0.0
+    
