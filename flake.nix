@@ -173,7 +173,10 @@
           copyToRoot = pkgs.buildEnv {
             name = "image-root";
             paths = [
-              (builtins.filterSource (path: type: (baseNameOf path) == "migrations") ./.)
+              (pkgs.lib.fileset.toSource {
+                root = ./.;
+                fileset = ./migrations;
+              })
               pkgs.sqlx-cli
               pkgs.coreutils
               pkgs.bash
@@ -214,7 +217,7 @@
           clippy = clippy;
         };
         shellHook = ''
-          export DATABASE_URL=postgres://drownbes:@localhost:5432/newsletter
+          export DATABASE_URL=postgres://postgres:@localhost:5432/newsletter
         '';
         inputsFrom = [
           postgres-service.config.services.outputs.devShell
@@ -232,6 +235,7 @@
           postgres-service.config.outputs.package
 
           #kubernetes
+          k9s
           kind
           kubectl
           kubernetes-helm

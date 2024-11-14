@@ -22,7 +22,6 @@ data:
       timeout_milliseconds: 10000
     redis_uri: "redis://:{{ .Values.redis.auth.password }}@{{ .Values.redis.fullnameOverride}}-master:{{ .Values.redis.master.containerPorts.redis }}"
   # just to create file
-  production: | 
+  production: |
     application:
       host: 0.0.0.0
-    

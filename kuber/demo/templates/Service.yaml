@@ -3,8 +3,9 @@ kind: Service
 metadata:
   name: zero2prod-service
 spec:
+  type: LoadBalancer
   selector:
     app: zero2prod
   ports:
-  - port: {{ .Values.hostPort }}
-    targetPort: {{ .Values.port }}
+    - port: {? {.Values.hostPort: ''} : ''}
+      targetPort: {? {.Values.port: ''} : ''}
