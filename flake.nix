@@ -222,6 +222,8 @@
         };
         shellHook = ''
           export DATABASE_URL=postgres://postgres:@localhost:5432/newsletter
+          export SHELL="${pkgs.bashInteractive}/bin/bash"
+          source <(process-compose completion bash)
         '';
         inputsFrom = [
           postgres-service.config.services.outputs.devShell
@@ -238,6 +240,8 @@
           bunyan-rs
           postgres-service.config.outputs.package
           just
+          socat
+          bashInteractive
 
           #kubernetes
           k9s

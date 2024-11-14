@@ -40,3 +40,17 @@ stop-cluster:
 
 stop-kind:
  kind delete cluster 
+
+
+
+start-process-compose-in-bg:
+  process-compose --detached
+
+stop-process-compose:
+  process-compose down
+
+psql:
+  psql $DATABASE_URL
+
+run-rust-lsp:
+  socat -dd TCP-LISTEN:12345,reuseaddr,fork EXEC:rust-analyzer
