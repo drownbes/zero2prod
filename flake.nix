@@ -157,6 +157,10 @@
 
       packages = rec {
         inherit integration cloud-provider-kind;
+        ingress-deployment = pkgs.fetchurl {
+          url = "https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml";
+          hash = "sha256-feb5+Zh+XOd4+x5XBZoYkwrUE9EiQYBdaaNWRRufL78=";
+        };
         artifacts = cargoArtifacts;
         project-crane = zero2prod-crate;
         project-docker-image = pkgs.dockerTools.buildLayeredImage {
@@ -233,6 +237,7 @@
           sqlx-cli
           bunyan-rs
           postgres-service.config.outputs.package
+          just
 
           #kubernetes
           k9s

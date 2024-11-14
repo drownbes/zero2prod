@@ -11,4 +11,4 @@ redis:
     password: redispassword
 port: 8000
 # host port exposed by cloud provider kind
-hostPort: 5678
+hostPort: 443

@@ -25,7 +25,7 @@ spec:
             - name: APP_ENVIRONMENT
               value: production
           ports:
-            - containerPort: {? {.Values.port: ''} : ''} #TODO: move to variable
+            - containerPort: {{ .Values.port }} #TODO: move to variable
           volumeMounts:
             - name: config
               mountPath: "/configuration"

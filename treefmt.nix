@@ -5,6 +5,6 @@
     rustfmt.enable = true;
     toml-sort.enable = true;
     jsonfmt.enable = true;
-    yamlfmt.enable = true;
+    yamlfmt.enable = false; 
   };
 }
