@@ -28,6 +28,7 @@ build-images-and-load-to-kind:
   kind load docker-image zero2prod:latest
 
 
+
 start-cluster:
   helm lint kuber/demo
   helm install --dry-run --debug zero2prod kuber/demo/
@@ -35,3 +36,7 @@ start-cluster:
 
 stop-cluster:
   helm uninstall zero2prod
+
+
+stop-kind:
+ kind delete cluster 
