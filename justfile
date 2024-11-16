@@ -1,4 +1,5 @@
-start-kind:
+[group('kind')]
+kind-start:
   #!/usr/bin/env bash
   echo "Start kind cluster"
   kind create cluster --config kuber/kind-config.yaml
@@ -17,42 +18,66 @@ start-kind:
     echo "Waiting for ingress to start..."
   done
 
+[group('kind')]
+kind-stop:
+ kind delete cluster 
 
-build-images-and-load-to-kind:
+[group('kind')]
+kind-sqlx-migration-build-and-load-to-kind:
   nix build .#sqlx-migration-image 
   docker load < result 
   kind load docker-image sqlx-migration:latest
 
+[group('kind')]
+kind-zero2prod-build-and-load-to-kind:
   nix build .#project-docker-image
   docker load < result 
   kind load docker-image zero2prod:latest
 
+[group('kind')]
+kind-fakepostmark-build-and-load-to-kind:
   nix build .#fakepostmark-docker-image
   docker load < result 
   kind load docker-image fakepostmark:latest
 
-start-cluster:
+[group('kind')]
+kind-all-build-and-load-to-kind: 
+  just kind-sqlx-migration-build-and-load-to-kind 
+  just kind-zero2prod-build-and-load-to-kind 
+  just kind-fakepostmark-build-and-load-to-kind
+
+
+###################################################################
+
+[group('helm')]
+helm-lint:
   helm lint kuber/demo
   helm install --dry-run --debug zero2prod kuber/demo/
+
+[group('helm')]
+helm-install: helm-lint
   helm install --debug --wait zero2prod kuber/demo/
 
-stop-cluster:
+[group('helm')]
+helm-uninstall:
   helm uninstall zero2prod
 
+[group('helm')]
+helm-upgrade:
+  helm upgrade zero2prod kuber/demo/
 
-stop-kind:
- kind delete cluster 
+
+###################################################################
 
 
-
-start-process-compose-in-bg:
+[group('dev')]
+dev-process-compose-start-in-bg:
   process-compose --detached
 
-stop-process-compose:
+[group('dev')]
+dev-process-compose-stop:
   process-compose down
 
-psql:
+[group('dev')]
+dev-local-psql:
   psql $DATABASE_URL
-
-run-rust-lsp:
-  socat -dd TCP-LISTEN:12345,reuseaddr,fork EXEC:rust-analyzer
