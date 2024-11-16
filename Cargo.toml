@@ -1,6 +1,10 @@
 [[bin]]
 name = "zero2prod"
 
+[[bin]]
+name = "fakepostmark"
+path = "src/fakepostmark/main.rs"
+
 [dependencies]
 actix-web = "4.9.0"
 tokio = {version = "1.41.0", features = ["full"]}
@@ -19,7 +23,12 @@ uuid = {version = "1.11.0", features = ["v4", "serde"]}
 chrono = "0.4.38"
 log = "0.4.22"
 tracing = {version = "0.1.40", features = ["log"]}
-tracing-subscriber = {version = "0.3.18", features = ["registry", "env-filter"]}
+tracing-subscriber = {version = "0.3.18", features = [
+  "registry",
+  "env-filter",
+  "json",
+  "std"
+]}
 tracing-bunyan-formatter = "0.3.9"
 tracing-log = "0.2.0"
 once_cell = "1.20.2"
@@ -39,6 +48,7 @@ actix-web-flash-messages = {version = "0.5.0", features = ["cookies"]}
 actix-session = {version = "0.10.1", features = ["redis-session-native-tls"]}
 serde_json = "1.0.132"
 serde_urlencoded = "0.7.1"
+env_logger = "0.11.5"
 
 [dev-dependencies]
 fake = "3.0.0"

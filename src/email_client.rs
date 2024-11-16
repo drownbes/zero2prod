@@ -10,6 +10,8 @@ pub struct EmailClient {
     authorization_token: SecretString,
 }
 
+pub const POSTMARK_SERVER_TOKEN: &str = "X-Postmark-Server-Token";
+
 impl EmailClient {
     pub fn new(
         base_url: String,
@@ -43,7 +45,7 @@ impl EmailClient {
         self.http_client
             .post(&url)
             .header(
-                "X-Postmark-Server-Token",
+                POSTMARK_SERVER_TOKEN,
                 self.authorization_token.expose_secret(),
             )
             .json(&request_body)
@@ -54,9 +56,9 @@ impl EmailClient {
     }
 }
 
-#[derive(serde::Serialize, Debug)]
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
 #[serde(rename_all = "PascalCase")]
-struct SendEmailRequest<'a> {
+pub struct SendEmailRequest<'a> {
     from: &'a str,
     to: &'a str,
     subject: &'a str,
