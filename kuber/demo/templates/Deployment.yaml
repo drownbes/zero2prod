@@ -4,6 +4,8 @@ metadata:
   name: zero2prod
   labels:
     app: zero2prod
+  annotations:
+    checksum/config: {{ include (print $.Template.BasePath "/ConfigMap.yaml") . | sha256sum }}
 spec:
   replicas: 1
   strategy:

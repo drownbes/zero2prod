@@ -4,6 +4,8 @@ metadata:
   name: fakepostmark
   labels:
     app: fakepostmark
+  annotations:
+    checksum/env: {{ .Values.fakePostmarkRustLog | sha256sum }}
 spec:
   replicas: 1
   strategy:

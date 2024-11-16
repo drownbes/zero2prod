@@ -15,3 +15,4 @@ hostPort: 443
 
 fakePostmarkPort: 8090
 fakePostmarkToken: token
+fakePostmarkRustLog: debug
