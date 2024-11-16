@@ -12,3 +12,6 @@ redis:
 port: 8000
 # host port exposed by cloud provider kind
 hostPort: 443
+
+fakePostmarkPort: 8090
+fakePostmarkToken: token

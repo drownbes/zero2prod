@@ -16,9 +16,9 @@ data:
       password: {{quote .Values.postgresql.auth.password }}
       database_name: {{quote .Values.postgresql.auth.database }}
     email_client:
-      base_url: "localhost"
+      base_url: "http://fakepostmark-service:{{ .Values.fakePostmarkPort }}"
       sender_email: "test@gmail.com"
-      authorization_token: "my-secret-token"
+      authorization_token: {{ quote .Values.fakePostmarkToken }}
       timeout_milliseconds: 10000
     redis_uri: "redis://:{{ .Values.redis.auth.password }}@{{ .Values.redis.fullnameOverride}}-master:{{ .Values.redis.master.containerPorts.redis }}"
   # just to create file

@@ -27,7 +27,9 @@ build-images-and-load-to-kind:
   docker load < result 
   kind load docker-image zero2prod:latest
 
-
+  nix build .#fakepostmark-docker-image
+  docker load < result 
+  kind load docker-image fakepostmark:latest
 
 start-cluster:
   helm lint kuber/demo

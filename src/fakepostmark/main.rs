@@ -3,6 +3,7 @@ use tracing_actix_web::TracingLogger;
 use tracing_log::LogTracer;
 use tracing_subscriber::fmt;
 use tracing_subscriber::fmt::format::FmtSpan;
+use tracing_subscriber::EnvFilter;
 use zero2prod::email_client::POSTMARK_SERVER_TOKEN;
 
 //TODO: need to figure out if it is possible to reuse defenition from main project
@@ -49,6 +50,7 @@ async fn main() -> std::io::Result<()> {
         .expect("No POSTMARK_SERVER_TOKEN env variable have been provided!");
     let token = web::Data::new(Token(token));
     let subscriber = fmt()
+        .with_env_filter(EnvFilter::from_default_env())
         .with_span_events(FmtSpan::NEW | FmtSpan::CLOSE)
         .with_target(false)
         .finish();

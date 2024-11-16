@@ -171,6 +171,14 @@
           };
         };
 
+        fakepostmark-docker-image = pkgs.dockerTools.buildLayeredImage {
+          name = "fakepostmark";
+          tag = "latest";
+          config = {
+            Cmd = ["${project-crane}/bin/fakepostmark"];
+          };
+        };
+
         sqlx-migration-image = pkgs.dockerTools.buildImage {
           name = "sqlx-migration";
           tag = "latest";
