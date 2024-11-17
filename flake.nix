@@ -237,7 +237,19 @@
           postgres-service.config.services.outputs.devShell
           zero2prod-crate
         ];
-        buildInputs = with pkgs; [
+        buildInputs = with pkgs; let 
+          helm = (wrapHelm kubernetes-helm {
+            plugins = with kubernetes-helmPlugins; [
+              helm-diff
+              helm-secrets
+              helm-s3
+              helm-git
+            ];
+          });
+          helmfile = helmfile-wrapped.override {
+            inherit (helm.passthru) pluginsDir;
+          };
+        in [
           cargo-watch
           cargo-tarpaulin
           cargo-audit
@@ -255,8 +267,9 @@
           k9s
           kind
           kubectl
-          kubernetes-helm
           cloud-provider-kind
+          helm
+          helmfile
         ];
       };
     });

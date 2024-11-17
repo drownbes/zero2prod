@@ -26,3 +26,9 @@ dependencies:
   - name: redis
     repository: https://charts.bitnami.com/bitnami
     version: 20.2.2
+  - name: kube-prometheus-stack
+    repository: https://prometheus-community.github.io/helm-charts
+    version: 66.2.1
+  #  - name: loki
+  #    repository: https://grafana.github.io/helm-charts
+  #    version: 6.19.0

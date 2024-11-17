@@ -1,0 +1,38 @@
+alloy:
+  configMap:
+    create: true
+    content: |
+      discovery.kubernetes "pod" {
+        role = "pod"
+      }
+
+      prometheus.scrape "pod" {
+        targets    = discovery.kubernetes.pod.targets
+        forward_to = [prometheus.remote_write.default.receiver]
+      }
+
+      discovery.relabel "pod_logs" {
+        targets = discovery.kubernetes.pod.targets
+        rule {
+          source_labels = ["__meta_kubernetes_pod_name"]
+          action = "replace"
+          target_label = "pod"
+        }
+      }
+
+      loki.source.kubernetes "pod_logs" {
+        targets    = discovery.relabel.pod_logs.output
+        forward_to = [loki.write.default.receiver]
+      }
+
+      loki.write "default" {
+        endpoint {
+          url = "http://loki-gateway/loki/api/v1/push"
+        }
+      }
+
+      prometheus.remote_write "default" {
+        endpoint {
+          url = "http://mimir-nginx.mimir.svc:80/api/v1/push"
+        }
+      }

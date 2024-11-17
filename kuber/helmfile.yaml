@@ -1,0 +1,29 @@
+repositories:
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami 
+  - name: grafana
+    url: https://grafana.github.io/helm-charts 
+
+releases:
+  - name: loki
+    chart: grafana/loki
+    namespace: telemetry
+    version: 6.19.0
+    values: 
+      - demo/loki-values.yaml
+  - name: alloy
+    chart: grafana/alloy
+    version: 0.10.0
+    namespace: telemetry
+    values:
+      - demo/alloy-values.yaml
+  - name: grafana
+    chart: grafana/grafana
+    version: 8.6.0
+    namespace: telemetry
+  - name: mimir
+    chart: grafana/mimir-distributed
+    version: 5.5.1
+    namespace: mimir

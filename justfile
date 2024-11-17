@@ -66,6 +66,11 @@ helm-uninstall:
 helm-upgrade:
   helm upgrade zero2prod kuber/demo/
 
+[group('helm')]
+helm-repos:
+   helm repo add grafana https://grafana.github.io/helm-charts
+   helm repo add bitnami https://charts.bitnami.com/bitnami
+   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 
 ###################################################################
 
