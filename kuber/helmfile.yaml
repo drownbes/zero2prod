@@ -27,3 +27,27 @@ releases:
     chart: grafana/mimir-distributed
     version: 5.5.1
     namespace: mimir
+  - name: postgresql
+    chart: bitnami/postgresql
+    namespace: db
+    version: 16.1.2
+    values:
+      - fullnameOverride: postgres
+        metrics:
+          enabled: true
+        auth:
+          username: postgres
+          password: postgrespassword
+          database: newsletter
+  - name: redis
+    namespace: db
+    chart: bitnami/redis
+    version: 20.2.2
+    values:
+      - metrics:
+          enabled: true
+        fullnameOverride: redis
+        architecture: standalone
+        auth:
+          password: redispassword
+
