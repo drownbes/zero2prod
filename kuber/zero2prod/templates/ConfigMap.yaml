@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zero2prod-config
+data:
+  base: |
+    application:
+      host: 0.0.0.0
+      base_url: "http://127.0.0.1:{{ .Values.zero2prod.hostPort }}"
+      port: {{ .Values.zero2prod.port}}
+      hmac_secret: hehe-dfadfjk-23124hdfadf-2414hdfhadfdsfdfdfdfsdfdfadfdafhdahfadhfa;dfhadfhsddfasdkfjdsfja
+    database:
+      host: {{quote .Values.postgresql.host}}
+      port: {{.Values.postgresql.port}}
+      username: {{quote .Values.postgresql.username }}
+      password: {{quote .Values.postgresql.password }}
+      database_name: {{quote .Values.postgresql.database }}
+    email_client:
+      base_url: "http://fakepostmark-service:{{ .Values.fakePostmark.port }}"
+      sender_email: "test@gmail.com"
+      authorization_token: {{ quote .Values.fakePostmark.token }}
+      timeout_milliseconds: 10000
+    redis_uri: "redis://:{{ .Values.redis.password }}@{{ .Values.redis.host}}-master:{{ .Values.redis.port }}"
+  # just to create file
+  production: |
+    application:
+      host: 0.0.0.0

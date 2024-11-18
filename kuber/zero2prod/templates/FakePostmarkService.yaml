@@ -6,4 +6,4 @@ spec:
   selector:
     app: fakepostmark
   ports:
-  - port: {{ .Values.fakePostmarkPort }}
+  - port: {{ .Values.fakePostmark.port }}

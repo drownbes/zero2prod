@@ -27,17 +27,17 @@ spec:
             - name: APP_ENVIRONMENT
               value: production
           ports:
-            - containerPort: {{ .Values.port }} #TODO: move to variable
+            - containerPort: {{ .Values.zero2prod.port }} #TODO: move to variable
           volumeMounts:
             - name: config
               mountPath: "/configuration"
               readOnly: true
-      initContainers:
-        - name: migrations-wait
-          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
-          args:
-            - "job"
-            - "-ljob=sqlx-migrate"
+      # initContainers:
+      #   - name: migrations-wait
+      #     image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+      #     args:
+      #       - "job"
+      #       - "-ljob=sqlx-migrate"
       volumes:
         - name: config
           configMap:

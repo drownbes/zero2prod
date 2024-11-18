@@ -5,7 +5,7 @@ metadata:
   labels:
     app: fakepostmark
   annotations:
-    checksum/env: {{ .Values.fakePostmarkRustLog | sha256sum }}
+    checksum/env: {{ .Values.fakePostmark.rustLog | sha256sum }}
 spec:
   replicas: 1
   strategy:
@@ -24,10 +24,10 @@ spec:
           imagePullPolicy: Never
           env:
             - name: PORT 
-              value: {{ quote .Values.fakePostmarkPort }}
+              value: {{ quote .Values.fakePostmark.port }}
             - name: POSTMARK_SERVER_TOKEN
-              value: {{ quote .Values.fakePostmarkToken }}
+              value: {{ quote .Values.fakePostmark.token }}
             - name: "RUST_LOG"
               value: "trace"
           ports:
-            - containerPort: {{ .Values.fakePostmarkPort }} 
+            - containerPort: {{ .Values.fakePostmark.port }} 

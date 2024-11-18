@@ -237,15 +237,15 @@
           postgres-service.config.services.outputs.devShell
           zero2prod-crate
         ];
-        buildInputs = with pkgs; let 
-          helm = (wrapHelm kubernetes-helm {
+        buildInputs = with pkgs; let
+          helm = wrapHelm kubernetes-helm {
             plugins = with kubernetes-helmPlugins; [
               helm-diff
               helm-secrets
               helm-s3
               helm-git
             ];
-          });
+          };
           helmfile = helmfile-wrapped.override {
             inherit (helm.passthru) pluginsDir;
           };

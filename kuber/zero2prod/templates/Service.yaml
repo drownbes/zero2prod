@@ -6,4 +6,4 @@ spec:
   selector:
     app: zero2prod
   ports:
-  - port: {{ .Values.port }}
+  - port: {{ .Values.zero2prod.port }}

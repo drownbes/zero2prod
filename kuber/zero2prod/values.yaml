@@ -1,0 +1,19 @@
+postgresql:
+  username:
+  password:
+  host:
+  port:
+  database:
+
+redis: 
+  host:
+  password:
+
+fakePostmark:
+  token:
+  port: 8090
+  rustLog: debug
+
+zero2prod:
+  port: 8000
+  hostPort: 443

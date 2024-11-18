@@ -6,23 +6,50 @@ repositories:
   - name: grafana
     url: https://grafana.github.io/helm-charts 
 
+environments:
+  default:
+    values:
+      - postgresql:
+          fullnameOverride: postgres
+          username: postgres
+          password: postgrespassword
+          database: newsletter
+          port: 5432
+      - redis:
+          fullnameOverride: redis
+          password: redispassword
+          port: 6379
+---
+
 releases:
   - name: loki
     chart: grafana/loki
     namespace: telemetry
     version: 6.19.0
     values: 
-      - demo/loki-values.yaml
+      - loki-values.yaml
   - name: alloy
     chart: grafana/alloy
     version: 0.10.0
     namespace: telemetry
     values:
-      - demo/alloy-values.yaml
+      - alloy-values.yaml
   - name: grafana
     chart: grafana/grafana
     version: 8.6.0
     namespace: telemetry
+    values: 
+      - adminPassword: admin
+        datasources:
+          datasources.yaml:
+            datasources:
+              - name: Alloy Prometheus
+                type: prometheus
+                url: http://mimir-nginx.mimir.svc:80/prometheus
+              - name: Alloy Loki
+                type: loki
+                url:  http://loki-gateway.telemetry.svc.cluster.local/
+
   - name: mimir
     chart: grafana/mimir-distributed
     version: 5.5.1
@@ -32,13 +59,18 @@ releases:
     namespace: db
     version: 16.1.2
     values:
-      - fullnameOverride: postgres
+      - fullnameOverride: {{ .Values.postgresql.fullnameOverride }}
+        global:
+          postgresql:
+            service:
+              ports:
+                postgresql: {{ .Values.postgresql.port }}
         metrics:
           enabled: true
         auth:
-          username: postgres
-          password: postgrespassword
-          database: newsletter
+          username: {{ .Values.postgresql.username }}
+          password: {{ .Values.postgresql.password }}
+          database: {{ .Values.postgresql.database }}
   - name: redis
     namespace: db
     chart: bitnami/redis
@@ -46,8 +78,37 @@ releases:
     values:
       - metrics:
           enabled: true
-        fullnameOverride: redis
+        fullnameOverride: {{ .Values.redis.fullnameOverride }}
         architecture: standalone
+        master:
+          service:
+            ports:
+              redis: {{ .Values.redis.port }}
         auth:
-          password: redispassword
+          password: {{ .Values.redis.password }}
+  - name: zero2prod
+    namespace: default
+    chart: ./zero2prod
+    needs:
+      - db/redis
+      - db/postgresql
+    values:
+      - postgresql:
+          username: {{ .Values.postgresql.username }}
+          password: {{ .Values.postgresql.password }}
+          host: {{ .Values.postgresql.fullnameOverride }}.db.svc.cluster.local
+          port: {{ .Values.postgresql.port }}
+          database: {{ .Values.postgresql.database }}
+        redis: 
+          host: {{ .Values.redis.fullnameOverride }}-master.db.svc.cluster.local
+          password: {{ .Values.redis.password }}
+        fakePostmark:
+          token: pupa
+          port: 8090
+          rustLog: debug
+        zero2prod:
+          port: 8000
+          hostPort: 443
+
+
 
