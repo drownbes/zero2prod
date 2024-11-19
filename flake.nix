@@ -163,9 +163,13 @@
         };
         artifacts = cargoArtifacts;
         project-crane = zero2prod-crate;
-        project-docker-image = pkgs.dockerTools.buildLayeredImage {
+        project-docker-image = pkgs.dockerTools.buildImage {
           name = "zero2prod";
           tag = "latest";
+          copyToRoot = pkgs.buildEnv {
+            name = "sh";
+            paths = [pkgs.coreutils pkgs.bashInteractive];
+          };
           config = {
             Cmd = ["${project-crane}/bin/zero2prod"];
           };

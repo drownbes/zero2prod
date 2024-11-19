@@ -96,11 +96,12 @@ releases:
       - postgresql:
           username: {{ .Values.postgresql.username }}
           password: {{ .Values.postgresql.password }}
-          host: {{ .Values.postgresql.fullnameOverride }}.db.svc.cluster.local
+          host: "{{ .Values.postgresql.fullnameOverride }}.db.svc.cluster.local"
           port: {{ .Values.postgresql.port }}
           database: {{ .Values.postgresql.database }}
         redis: 
-          host: {{ .Values.redis.fullnameOverride }}-master.db.svc.cluster.local
+          port: {{ .Values.redis.port }}
+          host: "{{ .Values.redis.fullnameOverride }}-master.db.svc.cluster.local"
           password: {{ .Values.redis.password }}
         fakePostmark:
           token: pupa

@@ -20,7 +20,7 @@ data:
       sender_email: "test@gmail.com"
       authorization_token: {{ quote .Values.fakePostmark.token }}
       timeout_milliseconds: 10000
-    redis_uri: "redis://:{{ .Values.redis.password }}@{{ .Values.redis.host}}-master:{{ .Values.redis.port }}"
+    redis_uri: "redis://:{{ .Values.redis.password }}@{{ .Values.redis.host}}:{{ .Values.redis.port }}"
   # just to create file
   production: |
     application:

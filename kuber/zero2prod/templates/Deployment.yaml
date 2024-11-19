@@ -26,6 +26,8 @@ spec:
           env:
             - name: APP_ENVIRONMENT
               value: production
+            - name: RUST_LOG
+              value: debug
           ports:
             - containerPort: {{ .Values.zero2prod.port }} #TODO: move to variable
           volumeMounts:
