@@ -49,6 +49,14 @@ kind-all-build-and-load-to-kind:
 
 ###################################################################
 
+[group('helmfile')]
+helmfile-lint:
+  helmfile lint -f kuber/helmfile.yaml
+
+[group('helmfile')]
+helmfile-apply:
+  helmfile apply -f kuber/helmfile.yaml
+
 [group('helm')]
 helm-lint:
   helm lint kuber/demo
